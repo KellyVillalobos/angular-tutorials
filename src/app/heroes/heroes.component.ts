@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Hero} from '../hero';
 import {HeroService} from '../hero.service';
-import {ActivatedRoute} from '@angular/router';
-import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-heroes',
@@ -12,14 +10,27 @@ import {Location} from '@angular/common';
 export class HeroesComponent implements OnInit {
   heroes: Hero[];
 
-  constructor(private route: ActivatedRoute,
-              private heroService: HeroService,
-              private location: Location
-  ) { }
+  constructor(private heroService: HeroService) {
+  }
 
 
   ngOnInit() {
     this.getHeroes();
+  }
+  delete(hero: Hero): void {
+    this.heroes = this.heroes.filter(h => h !== hero);
+    this.heroService.deleteHero(hero).subscribe();
+  }
+
+  add(name: string): void {
+    name = name.trim();
+    if (!name) {
+      return;
+    }
+    this.heroService.addHero({name} as Hero)
+      .subscribe(hero => {
+        this.heroes.push(hero);
+      });
   }
 
   getHeroes(): void {
